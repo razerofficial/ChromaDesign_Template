@@ -20,6 +20,8 @@ This is a HTML5/JS Template for making Chroma Designs
 
 * Browse the Chroma Design Template at [http://localhost:5001/template.html](http://localhost:5001/template.html)
 
+* Or browse with the [ElectronJS Windows Build](https://github.com/tgraupmann/EJS_ChromaEditor/releases/tag/0.1) of the local Chroma Design
+
 ## Setup
 
 * Clone `ChromaCommon` and `ChromaDesign_Template` into the same parent directory.
