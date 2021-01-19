@@ -1,0 +1,118 @@
+<html>
+<head>
+<script>
+// START *** avoid caching
+var scriptSDK = document.createElement('script');
+scriptSDK.setAttribute('src','../ChromaCommon/ChromaSDKImpl.js?cache=' + Date.now() );
+document.head.appendChild(scriptSDK);
+// END *** avoid caching
+</script>
+<script src="../ChromaCommon/Vue/vue.js"></script>
+<!-- import CSS -->
+<link rel="stylesheet" href="../ChromaCommon/Vue/index.css">
+<link rel="stylesheet" href="../ChromaCommon/index.css">
+<!-- import JavaScript -->
+<script src="../ChromaCommon/Vue/index.js"></script>
+<script src="../ChromaCommon/Vue/en.js"></script>
+</head>
+<body onload="onPageLoad()" onunload="onPageUnload()">
+<img name="imgEmulatorChromaLink" style="display: none" src="../ChromaCommon/emulator/EmulatorChromaLink5.png"/>
+<img name="imgEmulatorHeadset" style="display: none" src="../ChromaCommon/emulator/EmulatorHeadset.png"/>
+<img name="imgEmulatorKeyboard" style="display: none" src="../ChromaCommon/emulator/EmulatorKeyboard.png"/>
+<img name="imgEmulatorKeypad" style="display: none" src="../ChromaCommon/emulator/EmulatorKeypad.png"/>
+<img name="imgEmulatorMouse" style="display: none" src="../ChromaCommon/emulator/EmulatorMouse.png"/>
+<img name="imgEmulatorMousepad" style="display: none" src="../ChromaCommon/emulator/EmulatorMousepad.png"/>
+<a id="lnkDownload" style="display: none" download="client.chroma" href="" target="_blank"></a>
+<h1>GAME NAME Chroma Design Examples <div style="display: inline; color: green"><b><i>(Note: Click on the keyboard canvas to start live editing the Chroma effect.)</i></b></div></h1>
+
+<div id="header"></div>
+<script>
+//document.body.style.zoom = "48%"; //use when capturing video
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       // Typical action to be performed when the document is ready:
+       document.getElementById("header").innerHTML = xhttp.responseText;
+    }
+};
+xhttp.open("GET", "../ChromaCommon/header_less.txt", true);
+xhttp.send();
+</script>
+
+<div id="root">
+
+  <div id="editPanel" class="editPanel" style="display: none">
+    <div id="editComponents">
+      <el-select v-for="layer in layers" @change="onLayerChange" v-model="layer.value" placeholder="Select">
+        <el-option v-for="layerOption in layerOptions" :key="layerOption.value" :label="layerOption.label" :value="layerOption.value"></el-option>
+      </el-select><br/>
+      <el-slider v-for="threshold in thresholds" @change="onThresholdChange" v-model="threshold.threshold" :min="0" :max="threshold.max" :step="threshold.step" style="width: 100px; display: inline-table; padding: 10px"></el-slider><br/>
+      <el-color-picker v-for="color in colors" @active-change="onColorChange" v-model="color.color" :predefine="predefineColors"></el-color-picker>
+    </div>
+    <div>
+      <el-input type="textarea" @change="onTextChange" v-model="editText" :rows="100"></el-input>
+    </div>
+  </div>
+
+  <div style="padding: 10px; background: hsl(0, 0%, 25%)">Section 1 - Other Effect Ideas<br/><br/>
+    <div-chroma-set index="1" header="Scrolling Text" video="video/video_1.mp4"></div-chroma-set>
+    <div-chroma-set index="2" header="TBD" video="video/video_2.mp4"></div-chroma-set>
+    <div-chroma-set index="3" header="TBD" video="video/video_3.mp4"></div-chroma-set>
+    <div-chroma-set index="4" header="TBD" video="video/video_4.mp4"></div-chroma-set>
+    <div-chroma-set index="5" header="TBD" video="video/video_5.mp4"></div-chroma-set>
+    <div-chroma-set index="6" header="TBD" video="video/video_6.mp4"></div-chroma-set>
+    <div-chroma-set index="7" header="TBD" video="video/video_7.mp4"></div-chroma-set>
+    <div-chroma-set index="8" header="TBD" video="video/video_8.mp4"></div-chroma-set>
+    <div-chroma-set index="9" header="TBD" video="video/video_9.mp4"></div-chroma-set>
+    <div-chroma-set index="10" header="TBD" video="video/video_10.mp4"></div-chroma-set>
+    <div-chroma-set index="11" header="TBD" video="video/video_11.mp4"></div-chroma-set>
+    <div-chroma-set index="12" header="TBD" video="video/video_12.mp4"></div-chroma-set>
+    <div-chroma-set index="13" header="TBD" video="video/video_13.mp4"></div-chroma-set>
+    <div-chroma-set index="14" header="TBD" video="video/video_14.mp4"></div-chroma-set>
+    <div-chroma-set index="15" header="TBD" video="video/video_15.mp4"></div-chroma-set>
+  </div>
+
+  <br/><br/>
+
+</div>
+
+<script>
+// START *** avoid caching
+var scriptLiveEditor = document.createElement('script');
+scriptLiveEditor.setAttribute('src','../ChromaCommon/ChromaLiveEditor_v2.js?cache=' + Date.now() );
+document.head.appendChild(scriptLiveEditor);
+// END *** avoid caching
+</script>
+
+<a name="Videos">
+  <div id="footer"></div>
+  <script>
+  setTimeout(function() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+           // Typical action to be performed when the document is ready:
+           document.getElementById("footer").innerHTML = xhttp.responseText;
+        }
+    };
+    xhttp.open("GET", "../ChromaCommon/footer.txt", true);
+    xhttp.send();
+  }, 3000);
+  </script>
+</a>
+
+</body>
+
+<script>
+// START *** avoid caching
+var scriptIndex = document.createElement('script');
+scriptIndex.setAttribute('src','../ChromaCommon/index_v2.js?cache=' + Date.now() );
+document.head.appendChild(scriptIndex);
+// END *** avoid caching
+
+function setupAllChromaEffects() {
+
+
+}
+</script>
+</html>
