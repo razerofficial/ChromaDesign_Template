@@ -6,7 +6,14 @@ This is a HTML5/JS Template for making Chroma Designs
 
 ## Dependency
 
-* Download [ChromaCommon](https://github.com/razerofficial/ChromaCommon)
+* Download [ChromaDesign_Template](https://github.com/razerofficial/ChromaDesign_Template) and [ChromaCommon](https://github.com/razerofficial/ChromaCommon) to the same parent folder
+
+I.e.
+
+```
+C:\Public\ChromaDesign_Template
+C:\Public\ChromaCommon
+```
 
 * Download [NodeJS](https://nodejs.org/) to host locally for a local development sandbox
 
