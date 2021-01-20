@@ -6,7 +6,7 @@ This is a HTML5/JS Template for making Chroma Designs
 
 ## Dependency
 
-* Download [ChromaCommon](https://github.com/tgraupmann/ChromaCommon)
+* Download [ChromaCommon](https://github.com/razerofficial/ChromaCommon)
 
 * Download [NodeJS](https://nodejs.org/) to host locally for a local development sandbox
 
@@ -29,8 +29,8 @@ This is a HTML5/JS Template for making Chroma Designs
 ```
 mkdir "\Public"
 cd "\Public"
-git clone https://github.com/tgraupmann/ChromaCommon
-git clone https://github.com/tgraupmann/ChromaDesign_Template
+git clone https://github.com/razerofficial/ChromaCommon
+git clone https://github.com/razerofficial/ChromaDesign_Template
 cd ChromaDesign_Template
 ScriptInstallServer.cmd
 ScriptStartServer.cmd
