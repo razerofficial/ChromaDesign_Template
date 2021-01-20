@@ -2,7 +2,7 @@
 
 This is a HTML5/JS Template for making Chroma Designs
 
-* [Download Chroma Design Template](chroma_design.html)
+* Start with the [Chroma Design Template](chroma_design.html)
 
 ## Dependency
 
