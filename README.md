@@ -2,7 +2,7 @@
 
 This is a HTML5/JS Template for making Chroma Designs
 
-* [Download Chroma Design Template](template.html)
+* [Download Chroma Design Template](chroma_design.html)
 
 ## Dependency
 
@@ -18,7 +18,7 @@ This is a HTML5/JS Template for making Chroma Designs
 
 * Run [ScriptStartServer.cmd](ScriptStartServer.cmd) to start the local server
 
-* Browse the Chroma Design Template at [http://localhost:5001/template.html](http://localhost:5001/template.html)
+* Browse the Chroma Design Template at [http://localhost:5001/chroma_design.html](http://localhost:5001/chroma_design.html)
 
 * Or browse with the [ElectronJS Windows Build](https://github.com/tgraupmann/EJS_ChromaEditor/releases/tag/0.1) of the local Chroma Design
 
