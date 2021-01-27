@@ -1,0 +1,440 @@
+
+<html>
+<head>
+<style>
+body {
+  background-color: black;
+  color: white;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+input {
+  font-size: 1.5em;
+  padding: 0.5em;
+  background-color: 888888;
+  color: 00DD00;
+}
+.divText {
+  display: inline-table;
+  font-size: 2.0em;
+}
+input {
+  font-size: 2.0em;
+  padding: 0.5em;
+}
+</style>
+</head>
+<html>
+  <head>
+  <script>
+
+  // START *** avoid caching
+  var scriptSDK = document.createElement('script');
+  scriptSDK.setAttribute('src','../ChromaCommon/ChromaSDKImpl.js?cache=' + Date.now() );
+  document.head.appendChild(scriptSDK);
+  // END *** avoid caching
+
+    var chromaSDK = undefined;
+    var chromaIsInitialized = false;
+    var browserTabIsVisible = true;
+    var pageHadFocus = undefined;
+    var effects = [];
+    var effectIndex = 0;
+    var setupComplete = false;
+    var lastCurrentTime = 0;
+    var lastEffect = undefined;
+
+    function detectChromaSDK() {
+      var oReq = new XMLHttpRequest();
+      oReq.timeout = 2000; // time in milliseconds
+      oReq.addEventListener("load", function() {
+        var jsonVersion = JSON.parse(this.responseText);
+        var versionOrBetter = false;
+        if (jsonVersion != undefined &&
+          jsonVersion.version != undefined) {
+          var parts = jsonVersion.version.split(".");
+          if (parts.length >= 3 &&
+            ((parts[0] > 2) ||
+            (parts[0] == 2 && parts[1] > 8) ||
+            (parts[0] == 2 && parts[1] == 8 && parts[2] >= 5))) {
+              versionOrBetter = true;
+            } else {
+              //$("#divChromaMissing").show();
+              setTimeout(function() { detectChromaSDK(); }, 1000);
+            }
+        }
+
+        if (versionOrBetter) {
+          chromaSDK.init();
+          chromaIsInitialized = true;
+        } else {
+
+    	  console.log('ChromaSDK is too old!', this.responseText);
+          //showChromaProblem();
+
+          //Redetect Chroma
+          setTimeout(function() { detectChromaSDK(); }, 5000);
+        }
+      });
+      oReq.ontimeout = function() {
+        //showChromaProblem();
+    	console.log('ChromaSDK timed out!');
+        setTimeout(function() { detectChromaSDK(); }, 5000);
+      };
+      oReq.onerror = function() {
+        //showChromaProblem();
+    	console.log('ChromaSDK HTTP error!');
+        setTimeout(function() { detectChromaSDK(); }, 5000);
+      };
+      oReq.open("GET", "https://chromasdk.io:54236/razer/chromasdk");
+      oReq.send();
+    }
+
+    // browser function to determine tab is hidden
+    // ref: https://stackoverflow.com/questions/7389328/detect-if-browser-tab-has-focus/46719827#46719827
+    function handleTabVisibility() {
+
+      // check the visiblility of the page
+      var hidden, visibilityState, visibilityChange;
+
+      if (typeof document.hidden !== "undefined") {
+          hidden = "hidden", visibilityChange = "visibilitychange", visibilityState = "visibilityState";
+      }
+      else if (typeof document.mozHidden !== "undefined") {
+          hidden = "mozHidden", visibilityChange = "mozvisibilitychange", visibilityState = "mozVisibilityState";
+      }
+      else if (typeof document.msHidden !== "undefined") {
+          hidden = "msHidden", visibilityChange = "msvisibilitychange", visibilityState = "msVisibilityState";
+      }
+      else if (typeof document.webkitHidden !== "undefined") {
+          hidden = "webkitHidden", visibilityChange = "webkitvisibilitychange", visibilityState = "webkitVisibilityState";
+      }
+
+      if (typeof document.addEventListener === "undefined" || typeof hidden === "undefined") {
+          // not supported
+      }
+      else {
+          document.addEventListener(visibilityChange, function() {
+              //console.log('hidden', document[hidden]);
+              //console.log('visibilityState: ', document[visibilityState]);
+
+              switch (document[visibilityState]) {
+              case "visible":
+                  // visible
+                  browserTabIsVisible = true;
+                  break;
+              case "hidden":
+                  // hidden
+                  browserTabIsVisible = false;
+                  break;
+              }
+          }, false);
+      }
+
+    };
+    // end of browser function
+
+
+    function detectWindowFocus() {
+      if (browserTabIsVisible) {
+        if (!pageHadFocus) {
+          pageHadFocus = true;
+          //console.log('page has focus');
+          detectChromaSDK();
+        }
+      } else {
+        if (pageHadFocus && chromaIsInitialized) {
+          ChromaAnimation.clearAll();
+          chromaSDK.uninit();
+          console.log('Chroma has uninitialized! (Page lost focus)');
+          pageHadFocus = false;
+          chromaIsInitialized = false;
+          //console.log('page lost focus');
+        }
+      }
+    }
+
+    function pageLoaded() {
+
+      chromaSDK = new ChromaSDK();
+
+      handleTabVisibility();
+      setInterval(function() {
+        detectWindowFocus();
+      }, 1000);
+
+      setInterval(function() {
+        if (!video1.paused) {
+          if (chromaIsInitialized && setupComplete) {
+            if (Math.abs(lastCurrentTime - video1.currentTime) > 2) { //detect user rewind or fastforward
+              //console.log("User must've changed the time");
+              effectIndex = 0;
+            }
+            lastCurrentTime = video1.currentTime;
+            var effect = undefined;
+            var index;
+            effectIndex = 0;
+            do {
+              index = effectIndex;
+              if (effectIndex < effects.length) {
+                if (effects[effectIndex].time < video1.currentTime) {
+                  ++effectIndex;
+                }
+              }
+            } while (index != effectIndex);
+            if (effectIndex > 0 && effectIndex <= effects.length) {
+              effect = effects[effectIndex-1];
+            }
+            //console.log('progress', video1.currentTime, 'effectIndex', effectIndex);
+            if (effect != undefined &&
+              effect != lastEffect) {
+              lastEffect = effect;
+              effect.chromaLink();
+              effect.headset();
+              effect.keyboard();
+              effect.keypad();
+              effect.mouse();
+              effect.mousepad();
+            }
+          }
+        }
+      }, 1000);
+    }
+
+    setTimeout(function() {
+      video1.addEventListener('ended', function () {
+        effectIndex = 0;
+        lastCurrentTime = 0;
+        video1.play();
+      });
+    }, 1000);
+  </script>
+  </head>
+
+  <body onload="pageLoaded()">
+    <div>
+      <video id="video1" width="1280" height="720" autoplay muted controls>
+        <source src="video/BigBuckBunny.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </body>
+
+  <script>
+
+  function setupEffect(time) {
+
+  var effect = {};
+  effect.index = effects.length;
+  effect.time = time;
+  effect.chromaLink = function() { console.log("" + effect.index + ' chromaLink not defined!')};
+  effect.headset = function() { console.log("" + effect.index + ' headset not defined!')};
+  effect.keyboard = function() { console.log("" + effect.index + ' keyboard not defined!')};
+  effect.keypad = function() { console.log("" + effect.index + ' keypad not defined!')};
+  effect.mouse = function() { console.log("" + effect.index + ' mouse not defined!')};
+  effect.mousepad = function() { console.log("" + effect.index + ' mousepad not defined!')};
+  effects.push(effect);
+  return effect;
+}
+
+var showEffect1 = setupEffect(0.0);
+var showEffect2 = setupEffect(1.0);
+var showEffect3 = setupEffect(2.0);
+var showEffect4 = setupEffect(3.0);
+var showEffect5 = setupEffect(4.0);
+var showEffect6 = setupEffect(5.0);
+var showEffect7 = setupEffect(6.0);
+var showEffect8 = setupEffect(7.0);
+var showEffect9 = setupEffect(8.0);
+var showEffect10 = setupEffect(9.0);
+var showEffect11 = setupEffect(10.0);
+var showEffect12 = setupEffect(11.0);
+var showEffect13 = setupEffect(12.0);
+var showEffect14 = setupEffect(13.0);
+var showEffect15 = setupEffect(14.0);
+
+showEffect1.keyboard = function() {
+};
+showEffect1.chromaLink = function() {
+};
+showEffect1.headset = function() {
+};
+showEffect1.mousepad = function() {
+};
+showEffect1.mouse = function() {
+};
+showEffect1.keypad = function() {
+};
+showEffect2.keyboard = function() {
+};
+showEffect2.chromaLink = function() {
+};
+showEffect2.headset = function() {
+};
+showEffect2.mousepad = function() {
+};
+showEffect2.mouse = function() {
+};
+showEffect2.keypad = function() {
+};
+showEffect3.keyboard = function() {
+};
+showEffect3.chromaLink = function() {
+};
+showEffect3.headset = function() {
+};
+showEffect3.mousepad = function() {
+};
+showEffect3.mouse = function() {
+};
+showEffect3.keypad = function() {
+};
+showEffect4.keyboard = function() {
+};
+showEffect4.chromaLink = function() {
+};
+showEffect4.headset = function() {
+};
+showEffect4.mousepad = function() {
+};
+showEffect4.mouse = function() {
+};
+showEffect4.keypad = function() {
+};
+showEffect5.keyboard = function() {
+};
+showEffect5.chromaLink = function() {
+};
+showEffect5.headset = function() {
+};
+showEffect5.mousepad = function() {
+};
+showEffect5.mouse = function() {
+};
+showEffect5.keypad = function() {
+};
+showEffect6.keyboard = function() {
+};
+showEffect6.chromaLink = function() {
+};
+showEffect6.headset = function() {
+};
+showEffect6.mousepad = function() {
+};
+showEffect6.mouse = function() {
+};
+showEffect6.keypad = function() {
+};
+showEffect7.keyboard = function() {
+};
+showEffect7.chromaLink = function() {
+};
+showEffect7.headset = function() {
+};
+showEffect7.mousepad = function() {
+};
+showEffect7.mouse = function() {
+};
+showEffect7.keypad = function() {
+};
+showEffect8.keyboard = function() {
+};
+showEffect8.chromaLink = function() {
+};
+showEffect8.headset = function() {
+};
+showEffect8.mousepad = function() {
+};
+showEffect8.mouse = function() {
+};
+showEffect8.keypad = function() {
+};
+showEffect9.keyboard = function() {
+};
+showEffect9.chromaLink = function() {
+};
+showEffect9.headset = function() {
+};
+showEffect9.mousepad = function() {
+};
+showEffect9.mouse = function() {
+};
+showEffect9.keypad = function() {
+};
+showEffect10.keyboard = function() {
+};
+showEffect10.chromaLink = function() {
+};
+showEffect10.headset = function() {
+};
+showEffect10.mousepad = function() {
+};
+showEffect10.mouse = function() {
+};
+showEffect10.keypad = function() {
+};
+showEffect11.keyboard = function() {
+};
+showEffect11.chromaLink = function() {
+};
+showEffect11.headset = function() {
+};
+showEffect11.mousepad = function() {
+};
+showEffect11.mouse = function() {
+};
+showEffect11.keypad = function() {
+};
+showEffect12.keyboard = function() {
+};
+showEffect12.chromaLink = function() {
+};
+showEffect12.headset = function() {
+};
+showEffect12.mousepad = function() {
+};
+showEffect12.mouse = function() {
+};
+showEffect12.keypad = function() {
+};
+showEffect13.keyboard = function() {
+};
+showEffect13.chromaLink = function() {
+};
+showEffect13.headset = function() {
+};
+showEffect13.mousepad = function() {
+};
+showEffect13.mouse = function() {
+};
+showEffect13.keypad = function() {
+};
+showEffect14.keyboard = function() {
+};
+showEffect14.chromaLink = function() {
+};
+showEffect14.headset = function() {
+};
+showEffect14.mousepad = function() {
+};
+showEffect14.mouse = function() {
+};
+showEffect14.keypad = function() {
+};
+showEffect15.keyboard = function() {
+};
+showEffect15.chromaLink = function() {
+};
+showEffect15.headset = function() {
+};
+showEffect15.mousepad = function() {
+};
+showEffect15.mouse = function() {
+};
+showEffect15.keypad = function() {
+};
+
+setupComplete = true;
+
+  </script>
+
+</html>
