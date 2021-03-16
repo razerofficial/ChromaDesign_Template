@@ -1,8 +1,12 @@
 # ChromaDesign_Template
 
-This is a HTML5/JS Template for making Chroma Designs
+Several HTML5/JS templates are available for adding Chroma in the browser.
 
-* Start with the [Chroma Design Template](chroma_design.html)
+* [Chroma Design Template](chroma_design.html)
+
+* [Chroma Trailer Template](chroma_trailer.html)
+
+* [Chroma Website Template](chroma_website.html)
 
 ## Dependency
 
@@ -27,7 +31,11 @@ C:\Public\ChromaCommon
 
 * Browse the Chroma Design Template at [http://localhost:5001/chroma_design.html](http://localhost:5001/chroma_design.html)
 
-* Or browse with the [ElectronJS Windows Build](https://github.com/tgraupmann/EJS_ChromaEditor/releases/tag/0.1) of the local Chroma Design
+* Browse the Chroma Trailer Template at [http://localhost:5001/chroma_trailer.html](http://localhost:5001/chroma_trailer.html)
+
+* Browse the Chroma Website Template at [http://localhost:5001/chroma_website.html](http://localhost:5001/chroma_website.html)
+
+* You can also browse with the [ElectronJS Windows Build](https://github.com/tgraupmann/EJS_ChromaEditor/releases/tag/0.1) of the local Chroma Design.
 
 ## Setup
 
@@ -40,5 +48,8 @@ git clone https://github.com/razerofficial/ChromaCommon
 git clone https://github.com/razerofficial/ChromaDesign_Template
 cd ChromaDesign_Template
 ScriptInstallServer.cmd
-ScriptStartServer.cmd
+ScriptOpenChromaDesign.cmd
+ScriptOpenChromaTrailer.cmd
+ScriptOpenChromaWebsite.cmd
+ScriptOpenVSCode.cmd
 ```
