@@ -48,8 +48,13 @@
               (parts[0] == 2 && parts[1] > 8) ||
               (parts[0] == 2 && parts[1] == 8 && parts[2] >= 5))) {
             versionOrBetter = true;
+            divNoChroma.style.background = '#888';
+            divOldChroma.style.background = '#888';
+            divChromaReady.style.background = '#080';
           } else {
-            //$("#divChromaMissing").show();
+            divNoChroma.style.background = '#888';
+            divOldChroma.style.background = '#080';
+            divChromaReady.style.background = '#888';
             setTimeout(function () { detectChromaSDK(); }, 1000);
           }
         }
@@ -60,19 +65,29 @@
         } else {
 
           console.log('ChromaSDK is too old!', this.responseText);
-          //showChromaProblem();
+          divNoChroma.style.background = '#888';
+          divOldChroma.style.background = '#080';
+          divChromaReady.style.background = '#888';
 
           //Redetect Chroma
           setTimeout(function () { detectChromaSDK(); }, 5000);
         }
       });
       oReq.ontimeout = function () {
-        //showChromaProblem();
+
+        divNoChroma.style.background = '#080';
+        divOldChroma.style.background = '#888';
+        divChromaReady.style.background = '#888';
+
         console.log('ChromaSDK timed out!');
         setTimeout(function () { detectChromaSDK(); }, 5000);
       };
       oReq.onerror = function () {
-        //showChromaProblem();
+
+        divNoChroma.style.background = '#080';
+        divOldChroma.style.background = '#888';
+        divChromaReady.style.background = '#888';
+
         console.log('ChromaSDK HTTP error!');
         setTimeout(function () { detectChromaSDK(); }, 5000);
       };
@@ -197,7 +212,20 @@
 <body onload="pageLoaded()">
   <h3>Chroma-Enabled Sample Webpage</h3>
 
-  <div id="page" style="display: inline-table; width: 75%;">
+  <div id="divLoad" style="display: inline-table; width: 20%;">
+    Chroma Scenarios:
+    <div id="divNoChroma" style="background: #888; padding: 20px; margin: 20px">
+      <li>The Synapse Chroma Connect module is not detected. Unable to display Chroma!</li>
+    </div>
+    <div id="divOldChroma" style="background: #888; padding: 20px; margin: 20px">
+      <li>The Synapse Chroma Connect module is out of date. Unable to display Chroma!</li>
+    </div>
+    <div id="divChromaReady" style="background: #888; padding: 20px; margin: 20px">
+      <li>The Synapse Chroma Connect module is up to date. Ready to display Chroma!</li>
+    </div>
+  </div>
+
+  <div id="page" style="display: inline-table; width: 30%; padding-left: 100px">
     Webpage content<br />
     <br />
     <span>Direction Horizontal: </span><label id="lblDirectionH"></label><br />
@@ -211,7 +239,7 @@
 
     <button id="btnClickMe" style="background: #00F; color: white; width: 300px; height: 300px">Click me!</button>
   </div>
-  <div style="display: inline-table; width: 20%;">
+  <div style="display: inline-table; width: 35%;">
     Color 1: <div id="divColor1" style="width: 100px; height: 100px;"></div>
     Color 2: <div id="divColor2" style="width: 100px; height: 100px;"></div>
 
