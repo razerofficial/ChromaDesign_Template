@@ -200,7 +200,8 @@
   <div id="page" style="display: inline-table; width: 75%;">
     Webpage content<br />
     <br />
-    <span>Direction: </span><label id="lblDirection"></label><br />
+    <span>Direction Horizontal: </span><label id="lblDirectionH"></label><br />
+    <span>Direction Vertical: </span><label id="lblDirectionV"></label><br />
     <br />
     <div id="divHoverMe" style="background: #0FF; color: black; width: 300px; height: 300px;">
       Hover me!
@@ -225,26 +226,38 @@
 <script>
 
   let timerMove = 0;
+  let timerDirectionH = 0;
+  let timerDirectionV = 0;
   let lastX = 0;
   let lastY = 0;
   document.body.onmousemove = function (evt) {
 
     if (lastX != evt.pageX) {
-      if (lastX > evt.pageX) {
-        lblDirection.innerText = "Left";
-      } else {
-        lblDirection.innerText = "Right";
+      if (timerDirectionH < new Date()) {
+        let d = new Date();
+        d.setMilliseconds(d.getMilliseconds() + 33); //limit direction change movements
+        timerDirectionH = d;
+        if (lastX > evt.pageX) {
+          lblDirectionH.innerText = "Left";
+        } else {
+          lblDirectionH.innerText = "Right";
+        }
+        lastX = evt.pageX;
       }
-      lastX = evt.pageX;
     }
 
     if (lastY != evt.pageY) {
-      if (lastY > evt.pageY) {
-        lblDirection.innerText = "Up";
-      } else {
-        lblDirection.innerText = "Down";
+      if (timerDirectionV < new Date()) {
+        let d = new Date();
+        d.setMilliseconds(d.getMilliseconds() + 33); //limit direction change movements
+        timerDirectionV = d;
+        if (lastY > evt.pageY) {
+          lblDirectionV.innerText = "Up";
+        } else {
+          lblDirectionV.innerText = "Down";
+        }
+        lastY = evt.pageY;
       }
-      lastY = evt.pageY;
     }
 
     if (evt.target == btnClickMe) {
