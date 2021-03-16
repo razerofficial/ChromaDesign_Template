@@ -3,7 +3,7 @@
 <head>
   <style>
     body {
-      background-color: black;
+      background-color: rgb(82, 82, 82);
       color: white;
       font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     }
@@ -42,10 +42,9 @@
     var browserTabIsVisible = true;
     var pageHadFocus = undefined;
     var effects = [];
-    var effectIndex = 0;
     var setupComplete = false;
-    var lastCurrentTime = 0;
-    var lastEffect = undefined;
+    var color1 = undefined;
+    var color2 = undefined;
 
     function detectChromaSDK() {
       var oReq = new XMLHttpRequest();
@@ -157,9 +156,43 @@
       }
     }
 
+    // Ref: https://stackoverflow.com/questions/2387136/cross-browser-method-to-determine-vertical-scroll-percentage-in-javascript
+    function getScrollPercent() {
+      var h = document.body,
+        b = document.body,
+        st = 'scrollTop',
+        sh = 'scrollHeight';
+      return (h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight) * 100;
+    }
+
+    function getHexColor(bgrColor) {
+      var red = (bgrColor & 0xFF);
+      var green = (bgrColor & 0xFF00) >> 8;
+      var blue = (bgrColor & 0xFF0000) >> 16;
+      return 'rgb(' + red + ',' + green + ',' + blue + ')';
+    }
+
+    function updateDivScrollColor() {
+      const t = getScrollPercent() / 100;
+      let color = ChromaAnimation.lerpColor(color1, color2, t);
+      divScrollColor.style.background = getHexColor(color);
+    }
+
+    document.addEventListener('scroll', function (e) {
+      updateDivScrollColor();
+    });
+
     function pageLoaded() {
 
       chromaSDK = new ChromaSDK();
+
+      color1 = ChromaAnimation.getRGB(255, 0, 0);
+      color2 = ChromaAnimation.getRGB(0, 255, 0);
+
+      divColor1.style.background = getHexColor(color1);
+      divColor2.style.background = getHexColor(color2);
+
+      updateDivScrollColor();
 
       handleTabVisibility();
       setInterval(function () {
@@ -171,9 +204,29 @@
 </head>
 
 <body onload="pageLoaded()">
-  <div>
+  <h3>Chroma-Enabled Sample Webpage</h3>
 
+  <div style="display: inline-table; width: 75%;">
+    Webpage content<br />
+    <br />
+    <div id="divHoverMe" style="background: #0FF; color: black; width: 300px; height: 300px">
+      Hover me!
+    </div>
+
+    <br /><br />
+
+    <button id="btnClickMe" style="background: #F0F; width: 300px; height: 300px">Click me!</button>
   </div>
+  <div style="display: inline-table; width: 20%;">
+    Color 1: <div id="divColor1" style="width: 100px; height: 100px;"></div>
+    Color 2: <div id="divColor2" style="width: 100px; height: 100px;"></div>
+
+    Scroll to change color:<br />
+
+    <div id="divScrollColor" style=" height: 4000px">
+    </div>
+  </div>
+
 </body>
 
 <script>
