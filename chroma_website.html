@@ -164,7 +164,6 @@
       const t = getScrollPercent() / 100;
       let color = ChromaAnimation.lerpColor(color1, color2, t);
       divScrollColor.style.background = getHexColor(color);
-
       if (chromaIsInitialized) {
         ChromaAnimation.staticColorAll(color);
       }
@@ -198,10 +197,12 @@
 <body onload="pageLoaded()">
   <h3>Chroma-Enabled Sample Webpage</h3>
 
-  <div style="display: inline-table; width: 75%;">
+  <div id="page" style="display: inline-table; width: 75%;">
     Webpage content<br />
     <br />
-    <div id="divHoverMe" style="background: #0FF; color: black; width: 300px; height: 300px">
+    <span>Direction: </span><label id="lblDirection"></label><br />
+    <br />
+    <div id="divHoverMe" style="background: #0FF; color: black; width: 300px; height: 300px;">
       Hover me!
     </div>
 
@@ -223,10 +224,56 @@
 
 <script>
 
-  divHoverMe.onmouseover = function () {
-    if (chromaIsInitialized) {
-      let color = ChromaAnimation.getRGB(0, 255, 255);
-      ChromaAnimation.staticColorAll(color);
+  let timerMove = 0;
+  let lastX = 0;
+  let lastY = 0;
+  document.body.onmousemove = function (evt) {
+
+    if (lastX != evt.pageX) {
+      if (lastX > evt.pageX) {
+        lblDirection.innerText = "Left";
+      } else {
+        lblDirection.innerText = "Right";
+      }
+      lastX = evt.pageX;
+    }
+
+    if (lastY != evt.pageY) {
+      if (lastY > evt.pageY) {
+        lblDirection.innerText = "Up";
+      } else {
+        lblDirection.innerText = "Down";
+      }
+      lastY = evt.pageY;
+    }
+
+    if (evt.target == btnClickMe) {
+      return;
+    }
+    if (evt.target == divHoverMe) {
+      if (timerMove > new Date()) {
+        return;
+      }
+      let d = new Date();
+      d.setMilliseconds(d.getMilliseconds() + 33); //limit to 30 FPS
+      timerMove = d;
+      if (chromaIsInitialized) {
+        let color = ChromaAnimation.getRGB(0, 255, 255);
+        ChromaAnimation.staticColorAll(color);
+      }
+      return;
+    }
+    if (evt.target == page) {
+      if (timerMove > new Date()) {
+        return;
+      }
+      let d = new Date();
+      d.setMilliseconds(d.getMilliseconds() + 33); //limit to 30 FPS
+      timerMove = d;
+      if (chromaIsInitialized) {
+        let color = ChromaAnimation.getRGB(255, 0, 255);
+        ChromaAnimation.staticColorAll(color);
+      }
     }
   };
 
