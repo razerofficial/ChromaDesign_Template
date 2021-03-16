@@ -305,16 +305,7 @@
       return;
     }
     if (evt.target == page) {
-      if (timerMove > new Date()) {
-        return;
-      }
-      let d = new Date();
-      d.setMilliseconds(d.getMilliseconds() + 33); //limit to 30 FPS
-      timerMove = d;
-      if (chromaIsInitialized) {
-        let color = ChromaAnimation.getRGB(255, 0, 255);
-        ChromaAnimation.staticColorAll(color);
-      }
+      // mouse is over the body
     }
   };
 
@@ -325,9 +316,22 @@
     }
   };
 
+  function playEffect(index) {
+    if (index < 0 || index >= effects.length) {
+      return;
+    }
+    let effect = effects[index];
+    effect.chromaLink();
+    effect.headset();
+    effect.keyboard();
+    effect.keypad();
+    effect.mouse();
+    effect.mousepad();
+  }
+
   function setupEffect() {
 
-    var effect = {};
+    let effect = {};
     effect.index = effects.length;
     effect.chromaLink = function () { console.log("" + effect.index + ' chromaLink not defined!') };
     effect.headset = function () { console.log("" + effect.index + ' headset not defined!') };
