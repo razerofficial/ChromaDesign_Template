@@ -6,23 +6,11 @@
       background-color: rgb(82, 82, 82);
       color: white;
       font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 2em;
     }
 
-    input {
-      font-size: 1.5em;
-      padding: 0.5em;
-      background-color: 888888;
-      color: 00DD00;
-    }
-
-    .divText {
-      display: inline-table;
-      font-size: 2.0em;
-    }
-
-    input {
-      font-size: 2.0em;
-      padding: 0.5em;
+    button {
+      font-size: 1em;
     }
   </style>
 </head>
@@ -176,6 +164,10 @@
       const t = getScrollPercent() / 100;
       let color = ChromaAnimation.lerpColor(color1, color2, t);
       divScrollColor.style.background = getHexColor(color);
+
+      if (chromaIsInitialized) {
+        ChromaAnimation.staticColorAll(color);
+      }
     }
 
     document.addEventListener('scroll', function (e) {
@@ -215,7 +207,7 @@
 
     <br /><br />
 
-    <button id="btnClickMe" style="background: #F0F; width: 300px; height: 300px">Click me!</button>
+    <button id="btnClickMe" style="background: #00F; color: white; width: 300px; height: 300px">Click me!</button>
   </div>
   <div style="display: inline-table; width: 20%;">
     Color 1: <div id="divColor1" style="width: 100px; height: 100px;"></div>
@@ -223,13 +215,27 @@
 
     Scroll to change color:<br />
 
-    <div id="divScrollColor" style=" height: 4000px">
+    <div id="divScrollColor" style=" height: 3000px">
     </div>
   </div>
 
 </body>
 
 <script>
+
+  divHoverMe.onmouseover = function () {
+    if (chromaIsInitialized) {
+      let color = ChromaAnimation.getRGB(0, 255, 255);
+      ChromaAnimation.staticColorAll(color);
+    }
+  };
+
+  btnClickMe.onclick = function () {
+    if (chromaIsInitialized) {
+      let color = ChromaAnimation.getRGB(0, 0, 255);
+      ChromaAnimation.staticColorAll(color);
+    }
+  };
 
   function setupEffect() {
 
