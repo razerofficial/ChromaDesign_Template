@@ -29,7 +29,6 @@
     var chromaIsInitialized = false;
     var browserTabIsVisible = true;
     var pageHadFocus = undefined;
-    var effects = [];
     var setupComplete = false;
     var color1 = undefined;
     var color2 = undefined;
@@ -44,9 +43,9 @@
           jsonVersion.version != undefined) {
           var parts = jsonVersion.version.split(".");
           if (parts.length >= 3 &&
-            ((parts[0] > 2) ||
-              (parts[0] == 2 && parts[1] > 8) ||
-              (parts[0] == 2 && parts[1] == 8 && parts[2] >= 5))) {
+            ((parts[0] > 3) ||
+              (parts[0] == 3 && parts[1] > 19) ||
+              (parts[0] == 3 && parts[1] == 19 && parts[2] >= 1))) {
             versionOrBetter = true;
             divNoChroma.style.background = '#888';
             divOldChroma.style.background = '#888';
@@ -226,7 +225,6 @@
   </div>
 
   <div id="page" style="display: inline-table; width: 30%; padding-left: 100px">
-    Webpage content<br />
     <br />
     <span>Direction Horizontal: </span><label id="lblDirectionH"></label><br />
     <span>Direction Vertical: </span><label id="lblDirectionV"></label><br />
@@ -239,7 +237,20 @@
 
     <button id="btnClickMe" style="background: #00F; color: white; width: 300px; height: 300px">Click me!</button>
   </div>
-  <div style="display: inline-table; width: 35%;">
+  <div id="divScroll" style="display: inline-table; width: 35%;">
+    Quick Links:<br />
+    <ul>
+      <li>
+        <a target="_blank" style="color: #0F0" href="https://chroma.razer.com/ChromaGuide/">[Chroma Design Guide]</a>
+      </li>
+      <li>
+        <a target="_blank" style="color: #0F0" href="https://chroma.razer.com/ChromaEditor/">[Chroma Editor]</a>
+      </li>
+      <li>
+        <a target="_blank" style="color: #0F0" href="https://chromasdk.io:54236/razer/chromasdk">[Chroma Version]</a>
+      </li>
+    </ul>
+    <br /><br />
     Color 1: <div id="divColor1" style="width: 100px; height: 100px;"></div>
     Color 2: <div id="divColor2" style="width: 100px; height: 100px;"></div>
 
@@ -260,34 +271,6 @@
   let lastY = 0;
   document.body.onmousemove = function (evt) {
 
-    if (lastX != evt.pageX) {
-      if (timerDirectionH < new Date()) {
-        let d = new Date();
-        d.setMilliseconds(d.getMilliseconds() + 33); //limit direction change movements
-        timerDirectionH = d;
-        if (lastX > evt.pageX) {
-          lblDirectionH.innerText = "Left";
-        } else {
-          lblDirectionH.innerText = "Right";
-        }
-        lastX = evt.pageX;
-      }
-    }
-
-    if (lastY != evt.pageY) {
-      if (timerDirectionV < new Date()) {
-        let d = new Date();
-        d.setMilliseconds(d.getMilliseconds() + 33); //limit direction change movements
-        timerDirectionV = d;
-        if (lastY > evt.pageY) {
-          lblDirectionV.innerText = "Up";
-        } else {
-          lblDirectionV.innerText = "Down";
-        }
-        lastY = evt.pageY;
-      }
-    }
-
     if (evt.target == btnClickMe) {
       return;
     }
@@ -304,8 +287,55 @@
       }
       return;
     }
-    if (evt.target == page) {
+    if (evt.target == divLoad ||
+      evt.target == page ||
+      evt.target == divScroll) {
       // mouse is over the body
+
+      if (lastX != evt.pageX || lastY != evt.pageY) {
+        let showHorizontal = Math.abs(lastX - evt.pageX) > Math.abs(lastY - evt.pageY);
+        if (showHorizontal && Math.abs(lastX - evt.pageX) > 1) { // horizontal change is more
+          if (timerDirectionH < new Date()) {
+            let d = new Date();
+            d.setMilliseconds(d.getMilliseconds() + 500); //limit direction change movements
+            timerDirectionH = d;
+            if (lastX > evt.pageX) {
+              lblDirectionH.innerText = "Left";
+              if (chromaIsInitialized) {
+                let color = ChromaAnimation.getRGB(127, 0, 127);
+                ChromaAnimation.staticColorAll(color);
+              }
+            } else {
+              lblDirectionH.innerText = "Right";
+              if (chromaIsInitialized) {
+                let color = ChromaAnimation.getRGB(255, 0, 255);
+                ChromaAnimation.staticColorAll(color);
+              }
+            }
+          }
+        } else if (!showHorizontal && Math.abs(lastY - evt.pageY) > 1) { // vertical change is more
+          if (timerDirectionV < new Date()) {
+            let d = new Date();
+            d.setMilliseconds(d.getMilliseconds() + 500); //limit direction change movements
+            timerDirectionV = d;
+            if (lastY > evt.pageY) {
+              lblDirectionV.innerText = "Up";
+              if (chromaIsInitialized) {
+                let color = ChromaAnimation.getRGB(127, 127, 127);
+                ChromaAnimation.staticColorAll(color);
+              }
+            } else {
+              lblDirectionV.innerText = "Down";
+              if (chromaIsInitialized) {
+                let color = ChromaAnimation.getRGB(255, 255, 255);
+                ChromaAnimation.staticColorAll(color);
+              }
+            }
+          }
+        }
+        lastX = evt.pageX;
+        lastY = evt.pageY;
+      }
     }
   };
 
@@ -316,11 +346,7 @@
     }
   };
 
-  function playEffect(index) {
-    if (index < 0 || index >= effects.length) {
-      return;
-    }
-    let effect = effects[index];
+  function playEffect(effect) {
     effect.chromaLink();
     effect.headset();
     effect.keyboard();
@@ -332,18 +358,17 @@
   function setupEffect() {
 
     let effect = {};
-    effect.index = effects.length;
     effect.chromaLink = function () { console.log("" + effect.index + ' chromaLink not defined!') };
     effect.headset = function () { console.log("" + effect.index + ' headset not defined!') };
     effect.keyboard = function () { console.log("" + effect.index + ' keyboard not defined!') };
     effect.keypad = function () { console.log("" + effect.index + ' keypad not defined!') };
     effect.mouse = function () { console.log("" + effect.index + ' mouse not defined!') };
     effect.mousepad = function () { console.log("" + effect.index + ' mousepad not defined!') };
-    effects.push(effect);
     return effect;
   }
 
   // autogenerated content goes here
+
 
   setupComplete = true;
 
