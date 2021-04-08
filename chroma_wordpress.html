@@ -1,0 +1,290 @@
+<html>
+
+<head>
+  <style>
+    body {
+      background-color: rgb(82, 82, 82);
+      color: green;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 2em;
+    }
+  </style>
+
+  <script>
+
+    // START *** avoid caching
+    var scriptSDK = document.createElement('script');
+    scriptSDK.setAttribute('src', '../ChromaCommon/ChromaSDKImpl.js?cache=' + Date.now());
+    document.head.appendChild(scriptSDK);
+    // END *** avoid caching
+
+    var chromaSDK = undefined;
+    var chromaIsInitialized = false;
+    var browserTabIsVisible = true;
+    var pageHadFocus = undefined;
+    var setupComplete = false;
+    var supportsChroma = false;
+
+    function detectChromaSDK() {
+      var oReq = new XMLHttpRequest();
+      oReq.timeout = 2000; // time in milliseconds
+      oReq.addEventListener("load", function () {
+        var jsonVersion = JSON.parse(this.responseText);
+        var versionOrBetter = false;
+        if (jsonVersion != undefined &&
+          jsonVersion.version != undefined) {
+          var parts = jsonVersion.version.split(".");
+          if (parts.length >= 3 &&
+            ((parts[0] > 3) ||
+              (parts[0] == 3 && parts[1] > 19) ||
+              (parts[0] == 3 && parts[1] == 19 && parts[2] >= 1))) {
+            versionOrBetter = true;
+          } else {
+            setTimeout(function () { detectChromaSDK(); }, 1000);
+          }
+        }
+
+        if (versionOrBetter) {
+          supportsChroma = true;
+        } else {
+
+          console.log('ChromaSDK is too old!', this.responseText);
+
+          //Redetect Chroma
+          setTimeout(function () { detectChromaSDK(); }, 5000);
+        }
+      });
+      oReq.ontimeout = function () {
+
+        console.log('ChromaSDK timed out!');
+        setTimeout(function () { detectChromaSDK(); }, 5000);
+      };
+      oReq.onerror = function () {
+
+        console.log('ChromaSDK HTTP error!');
+        setTimeout(function () { detectChromaSDK(); }, 5000);
+      };
+      oReq.open("GET", "https://chromasdk.io:54236/razer/chromasdk");
+      oReq.send();
+    }
+
+    // browser function to determine tab is hidden
+    // ref: https://stackoverflow.com/questions/7389328/detect-if-browser-tab-has-focus/46719827#46719827
+    function handleTabVisibility() {
+
+      // check the visiblility of the page
+      var hidden, visibilityState, visibilityChange;
+
+      if (typeof document.hidden !== "undefined") {
+        hidden = "hidden", visibilityChange = "visibilitychange", visibilityState = "visibilityState";
+      }
+      else if (typeof document.mozHidden !== "undefined") {
+        hidden = "mozHidden", visibilityChange = "mozvisibilitychange", visibilityState = "mozVisibilityState";
+      }
+      else if (typeof document.msHidden !== "undefined") {
+        hidden = "msHidden", visibilityChange = "msvisibilitychange", visibilityState = "msVisibilityState";
+      }
+      else if (typeof document.webkitHidden !== "undefined") {
+        hidden = "webkitHidden", visibilityChange = "webkitvisibilitychange", visibilityState = "webkitVisibilityState";
+      }
+
+      if (typeof document.addEventListener === "undefined" || typeof hidden === "undefined") {
+        // not supported
+      }
+      else {
+        document.addEventListener(visibilityChange, function () {
+          //console.log('hidden', document[hidden]);
+          //console.log('visibilityState: ', document[visibilityState]);
+
+          switch (document[visibilityState]) {
+            case "visible":
+              // visible
+              browserTabIsVisible = true;
+              break;
+            case "hidden":
+              // hidden
+              browserTabIsVisible = false;
+              break;
+          }
+        }, false);
+      }
+
+    };
+    // end of browser function
+
+
+    function detectWindowFocus() {
+      if (browserTabIsVisible) {
+        if (!pageHadFocus) {
+          pageHadFocus = true;
+          //console.log('page has focus');
+          detectChromaSDK();
+        }
+      } else {
+        if (pageHadFocus && chromaIsInitialized) {
+          ChromaAnimation.clearAll();
+          chromaSDK.uninit();
+          console.log('Chroma has uninitialized! (Page lost focus)');
+          pageHadFocus = false;
+          chromaIsInitialized = false;
+          //console.log('page lost focus');
+        }
+      }
+    }
+
+    function pageLoaded() {
+
+      chromaSDK = new ChromaSDK();
+
+      handleTabVisibility();
+      setInterval(function () {
+        detectWindowFocus();
+      }, 1000);
+    }
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var effectName = urlParams.get('effect');
+
+    function handleMouseEnter() {
+      //console.log('handleMouseEnter', 'effectName', effectName);
+      if (supportsChroma && !chromaIsInitialized) {
+        chromaSDK.init();
+        chromaIsInitialized = true;
+        setTimeout(function() {
+          playEffect(showEffect);
+        }, 100);
+      }
+    }
+
+    function handleMouseLeave() {
+      //console.log('handleMouseLeave', 'effectName', effectName);
+      if (chromaIsInitialized) {
+        chromaSDK.uninit();
+        chromaIsInitialized = false;
+      }
+    }
+
+  </script>
+</head>
+
+<body onload="pageLoaded()" onmouseenter="handleMouseEnter()" onmouseleave="handleMouseLeave()">
+  <div>Hover to preview Chroma RGB</div>
+  <div style="color: white; padding: 10px" id="lblEffectName"></div>
+  <script>
+    lblEffectName.innerText = effectName;
+  </script>
+</body>
+
+<script>
+
+  function playEffect(effect) {
+    effect.chromaLink();
+    effect.headset();
+    effect.keyboard();
+    effect.keypad();
+    effect.mouse();
+    effect.mousepad();
+  }
+
+  function setupEffect() {
+
+    let effect = {};
+    effect.chromaLink = function () { console.log('Effect chromaLink not defined!') };
+    effect.headset = function () { console.log('Effect headset not defined!') };
+    effect.keyboard = function () { console.log('Effect keyboard not defined!') };
+    effect.keypad = function () { console.log('Effect keypad not defined!') };
+    effect.mouse = function () { console.log('Effect mouse not defined!') };
+    effect.mousepad = function () { console.log('Effect mousepad not defined!') };
+    return effect;
+  }
+
+  // autogenerated content goes here
+
+  var showEffect = setupEffect();
+  showEffect.keyboard = function() {
+
+    var baseLayer = 'animations/'+effectName+'_Keyboard.chroma';
+     ChromaAnimation.closeAnimation(baseLayer);
+     ChromaAnimation.openAnimation(baseLayer, function(baseAnimation) {
+
+       ChromaAnimation.reduceFrames(baseLayer, 2);
+       ChromaAnimation.reduceFrames(baseLayer, 2);
+
+       ChromaAnimation.setChromaCustomFlag(baseLayer, true);
+       ChromaAnimation.setChromaCustomColorAllFrames(baseLayer);
+       ChromaAnimation.overrideFrameDuration(baseLayer, 0.033);
+       ChromaAnimation.playAnimation(baseLayer, true);
+    });
+  };
+  showEffect.chromaLink = function() {
+
+    var baseLayer = 'animations/'+effectName+'_ChromaLink.chroma';
+    ChromaAnimation.closeAnimation(baseLayer);
+    ChromaAnimation.openAnimation(baseLayer, function(baseAnimation) {
+
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+
+      ChromaAnimation.overrideFrameDuration(baseLayer, 0.033);
+      ChromaAnimation.playAnimation(baseLayer, true);
+    });
+  };
+  showEffect.headset = function() {
+
+    var baseLayer = 'animations/'+effectName+'_Headset.chroma';
+    ChromaAnimation.closeAnimation(baseLayer);
+    ChromaAnimation.openAnimation(baseLayer, function(baseAnimation) {
+
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+
+      ChromaAnimation.overrideFrameDuration(baseLayer, 0.033);
+      ChromaAnimation.playAnimation(baseLayer, true);
+    });
+  };
+  showEffect.mousepad = function() {
+
+    var baseLayer = 'animations/'+effectName+'_Mousepad.chroma';
+    ChromaAnimation.closeAnimation(baseLayer);
+    ChromaAnimation.openAnimation(baseLayer, function(baseAnimation) {
+
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+
+      ChromaAnimation.overrideFrameDuration(baseLayer, 0.033);
+      ChromaAnimation.playAnimation(baseLayer, true);
+    });
+  };
+  showEffect.mouse = function() {
+
+    var baseLayer = 'animations/'+effectName+'_Mouse.chroma';
+    ChromaAnimation.closeAnimation(baseLayer);
+    ChromaAnimation.openAnimation(baseLayer, function(baseAnimation) {
+
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+
+      ChromaAnimation.overrideFrameDuration(baseLayer, 0.033);
+      ChromaAnimation.playAnimation(baseLayer, true);
+    });
+  };
+  showEffect.keypad = function() {
+
+    var baseLayer = 'animations/'+effectName+'_Keypad.chroma';
+    ChromaAnimation.closeAnimation(baseLayer);
+    ChromaAnimation.openAnimation(baseLayer, function(baseAnimation) {
+
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+      ChromaAnimation.reduceFrames(baseLayer, 2);
+
+      ChromaAnimation.overrideFrameDuration(baseLayer, 0.033);
+      ChromaAnimation.playAnimation(baseLayer, true);
+    });
+  };
+  
+
+  setupComplete = true;
+
+</script>
+
+</html>
