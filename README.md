@@ -35,6 +35,8 @@ C:\Public\ChromaCommon
 
 * Browse the Chroma Website Template at [http://localhost:5001/chroma_website.html](http://localhost:5001/chroma_website.html)
 
+* Browse the Chroma Wordpress Template at [http://localhost:5001/chroma_wordpress.html](http://localhost:5001/chroma_wordpress.html)
+
 * You can also browse with the [ElectronJS Windows Build](https://github.com/tgraupmann/EJS_ChromaEditor/releases/tag/0.1) of the local Chroma Design.
 
 ## Setup
@@ -51,5 +53,6 @@ ScriptInstallServer.cmd
 ScriptOpenChromaDesign.cmd
 ScriptOpenChromaTrailer.cmd
 ScriptOpenChromaWebsite.cmd
+ScriptOpenChromaWordPress.cmd
 ScriptOpenVSCode.cmd
 ```
