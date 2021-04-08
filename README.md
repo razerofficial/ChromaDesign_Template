@@ -8,6 +8,8 @@ Several HTML5/JS templates are available for adding Chroma in the browser.
 
 * [Chroma Website Template](chroma_website.html)
 
+* [Chroma WordPress Template](chroma_wordpress.html)
+
 ## Dependency
 
 * Download [ChromaDesign_Template](https://github.com/razerofficial/ChromaDesign_Template) and [ChromaCommon](https://github.com/razerofficial/ChromaCommon) to the same parent folder
