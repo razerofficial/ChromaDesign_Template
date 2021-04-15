@@ -8,6 +8,8 @@ Several HTML5/JS templates are available for adding Chroma in the browser.
 
 * [Chroma Website Template](chroma_website.html)
 
+* [Chroma WordPress Template](chroma_wordpress.html)
+
 ## Dependency
 
 * Download [ChromaDesign_Template](https://github.com/razerofficial/ChromaDesign_Template) and [ChromaCommon](https://github.com/razerofficial/ChromaCommon) to the same parent folder
@@ -35,6 +37,8 @@ C:\Public\ChromaCommon
 
 * Browse the Chroma Website Template at [http://localhost:5001/chroma_website.html](http://localhost:5001/chroma_website.html)
 
+* Browse the Chroma Wordpress Template at [http://localhost:5001/chroma_wordpress.html](http://localhost:5001/chroma_wordpress.html)
+
 * You can also browse with the [ElectronJS Windows Build](https://github.com/tgraupmann/EJS_ChromaEditor/releases/tag/0.1) of the local Chroma Design.
 
 ## Setup
@@ -51,5 +55,6 @@ ScriptInstallServer.cmd
 ScriptOpenChromaDesign.cmd
 ScriptOpenChromaTrailer.cmd
 ScriptOpenChromaWebsite.cmd
+ScriptOpenChromaWordPress.cmd
 ScriptOpenVSCode.cmd
 ```
